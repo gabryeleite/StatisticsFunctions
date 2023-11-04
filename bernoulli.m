@@ -32,7 +32,7 @@ endfunction
 % Input:
 p = input('Digite a probabilidade p (valores entre 0 e 1): ');
 %m = input('Digite o numero de amostras: ');
-fid = fopen('vetor.txt','r');
+fid = fopen('bernoulli.txt','r');
 x = fscanf(fid, '%f');
 fclose(fid);
 %x = bernoullirv(p, m);
