@@ -1,6 +1,7 @@
 clear
 clc
 
+% Funções:
 function pmf = binomialpmf(n, p, x)
   % binomial(n, p) rv X,
   % input = vector x
