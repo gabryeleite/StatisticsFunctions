@@ -17,7 +17,7 @@ function cdf = bernoullicdf(pmf, x)
 end
 
 function x = bernoullirv(p, m)
-  % retornar m amostras da variável aleatória Bernoulli (p)
+  % Gera m amostras da variável aleatória Bernoulli (p)
   r = rand(m, 1);
   x = (r >= (1 - p));
 endfunction
