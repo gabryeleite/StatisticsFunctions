@@ -3,10 +3,6 @@ clc
 
 % Funções:
 function pv = bernoullipmf(p, x)
-  % For Bernoulli (p) rv X
-  % input = vector x
-  % output = vector pv
-  % such that pv(i) = Prob(X = x(i))
   % Na função bernoulli só são aceitos os valores 0 e 1;
   % portanto, qualquer valor diferente terá a probabilidade 0
   pv = (1 - p) * (x == 0) + p * (x == 1);
@@ -14,17 +10,14 @@ function pv = bernoullipmf(p, x)
 end
 
 function cdf = bernoullicdf(pmf, x)
-  % For Bernoulli (p) random variable X
-  % input = vector x
-  % output = vector cdf
-  % such that cdf(i) = Prob(X <= x(i))
+  % soma cumulativa
   x = floor(x(:));
   cdf = cumsum(pmf); % cumsum = soma acumulada das probabilidades
   cdf(x > 1) = 1; % valores de X maiores que 1 terão probabilidade 1
 end
 
 function x = bernoullirv(p, m)
-  % return m samples of Bernoulli(p) random variable
+  % retornar m amostras da variável aleatória Bernoulli (p)
   r = rand(m, 1);
   x = (r >= (1 - p));
 endfunction
@@ -32,7 +25,7 @@ endfunction
 % Input:
 p = input('Digite a probabilidade p (valores entre 0 e 1): ');
 %m = input('Digite o numero de amostras: ');
-fid = fopen('bernoulli.txt','r');
+fid = fopen('dados.txt','r');
 x = fscanf(fid, '%f');
 fclose(fid);
 %x = bernoullirv(p, m);
@@ -59,4 +52,3 @@ ylabel('Probabilidade acumulada');
 ylim([0, 1.5]);
 xticks(x);
 grid on;
-
