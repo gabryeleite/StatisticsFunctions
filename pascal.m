@@ -66,12 +66,12 @@ end
 
 % Input:
 k = input('Informe o parâmetro k (inteiro positivo): ');
-p = input('Informe a probabilidade p (entre o e 1): ');
+p = input('Informe a probabilidade p (entre 0 e 1): ');
 % m = input('Informe o número de amostras (m): ');
 fid = fopen('dados.txt','r');
 x = fscanf(fid, '%d');
 fclose(fid);
-%x = pascalrv(k, p, m) % Gera variáveis aleatórias seguindo a distribuição de Poisson
+%x = pascalrv(k, p, m) 
 valores_pmf = pascalpmf(k, p, x);
 valores_cdf = pascalcdf(k, p, x);
 
