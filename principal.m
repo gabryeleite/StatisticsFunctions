@@ -2,6 +2,7 @@ clear
 clc
 
 % Funções:
+% Bernoulli:
 function pv = bernoullipmf(p, x)
   % Na função bernoulli só são aceitos os valores 0 e 1;
   % portanto, qualquer valor diferente terá a probabilidade 0
@@ -17,7 +18,7 @@ function cdf = bernoullicdf(pmf, x)
 end
 
 function x = bernoullirv(p, m)
-  % Gera m amostras da variável aleatória Bernoulli (p)
+  % retornar m amostras da variável aleatória Bernoulli (p)
   r = rand(m, 1);
   x = (r >= (1 - p));
 endfunction
@@ -26,7 +27,7 @@ function bernoulli()
   % Input:
   p = input('Digite a probabilidade p (valores entre 0 e 1): ');
   %m = input('Digite o numero de amostras: ');
-  fid = fopen('bernoulli.txt','r');
+  fid = fopen('dados.txt','r');
   x = fscanf(fid, '%f');
   fclose(fid);
   %x = bernoullirv(p, m);
@@ -36,7 +37,7 @@ function bernoulli()
   % Output:
   % BernoulliPMF
   subplot(2,1,1);
-  stem(x, Bpmf);
+  stem(x, Bpmf, 'LineWidth', 2);
   title('Bernoulli PMF');
   xlabel('X');
   ylabel('Probabilidade');
@@ -46,7 +47,7 @@ function bernoulli()
 
   % BernoulliCDF
   subplot(2,1,2);
-  stairs(x, Bcdf); % stairs melhor representação para CDF, como se trata de uma soma acumulada
+  stairs(x, Bcdf, 'LineWidth', 2); % stairs melhor representação para CDF, como se trata de uma soma acumulada
   title('Bernoulli CDF');
   xlabel('X');
   ylabel('Probabilidade acumulada');
@@ -55,6 +56,7 @@ function bernoulli()
   grid on;
 end
 
+% Binomial:
 function pmf = binomialpmf(n, p, x)
   % x = vetor de inteiros não negativos
   if p < 0.5
@@ -113,7 +115,7 @@ function binomial()
   p = input('Digite a probabilidade p (valores entre 0 e 1): ');
   n = input('Digite o numero de ensaios n: ');
   %m = input('Digite o numero de amostras: ');
-  fid = fopen('binomial.txt','r');
+  fid = fopen('dados.txt','r');
   x = fscanf(fid, '%d');
   fclose(fid);
   %x = binomialrv(n, p, m);
@@ -123,7 +125,7 @@ function binomial()
   % Output:
   % BinomialPMF
   subplot(2,1,1);
-  stem(x, Bipmf);
+  stem(x, Bipmf, 'LineWidth', 2);
   title('Binomial PMF');
   xlabel('X');
   ylabel('Probabilidade');
@@ -133,7 +135,7 @@ function binomial()
 
   % BinomialCDF
   subplot(2,1,2);
-  stairs(x, Bicdf); % stairs melhor representação para CDF, como se trata de uma soma acumulada
+  stairs(x, Bicdf, 'LineWidth', 2); % stairs melhor representação para CDF, como se trata de uma soma acumulada
   title('Binomial CDF');
   xlabel('X');
   ylabel('Probabilidade acumulada');
@@ -142,11 +144,104 @@ function binomial()
   grid on;
 end
 
+% Poisson:
+function pmf = poisson_pmf(alpha, x)
+  % Variável aleatória X seguindo a distribuição de Poisson(alpha)
+  % Saída: vetor pmf: pmf(i) = P[X = x(i)]
+
+  x = x(:);
+  k = (1:max(x))';
+  logfatoriais = cumsum(log(k));
+  pb = exp([-alpha; -alpha + (k * log(alpha)) - logfatoriais]);
+
+  okx = (x >= 0) .* (x == floor(x));
+  x = okx .* x;
+  pmf = okx .* pb(x + 1); % pmf(i) = 0 para x(i) com probabilidade zero
+end
+
+function cdf = poisson_cdf(pmf, x)
+  % Saída cdf(i) = Prob[X <= x(i)]
+
+  x = floor(x(:));
+  sx = 0:max(x);
+
+  allcdf = cumsum(pmf); % soma cumulativa da PMF para obter a CDF
+
+  % Ajuste para garantir que a CDF atinja 1 no final
+  %cdf = cdf / cdf(end);
+
+  % Correção para x(i) < 0
+  okx = (x >= 0);
+  cdf = okx .* allcdf(x + 1); % cdf = 0 para x(i) < 0
+end
+
+function x = variavel_poisson(alpha, m)
+  % Retorna m amostras da variável aleatória de Poisson(alpha) X
+  r = rand(m, 1);
+  rmax = max(r);
+  xmin = 0;
+  xmax = ceil(2 * alpha); % define a faixa máxima
+  sx = xmin:xmax;
+  cdf = poisson_cdf(alpha, sx);
+
+  % enquanto sum(cdf <= rmax) == (xmax - xmin + 1)
+  while cdf(end) <= rmax
+    xmax = 2 * xmax;
+    sx = xmin:xmax;
+    cdf = poisson_cdf(alpha, sx);
+  end
+
+  x = xmin + sum(cdf <= rmax);
+end
+
+function poisson()
+  % Input:
+  alpha = input('Informe o parâmetro alpha para a distribuição de Poisson: ');
+  % m = input('Informe o número de amostras (m): ');
+  fid = fopen('dados.txt','r');
+  valores_x = fscanf(fid, '%d');
+  fclose(fid);
+  %valores_x = variavel_poisson(alpha, m) % Gera variáveis aleatórias seguindo a distribuição de Poisson
+  valores_pmf = poisson_pmf(alpha, valores_x);
+  valores_cdf = poisson_cdf(valores_pmf, valores_x);
+
+  % Output:
+  % PoissonPMF
+  % figure;
+  subplot(2, 1, 1);
+  stem(valores_x, valores_pmf, 'LineWidth', 2);
+  title('Poisson PMF');
+  xlabel('X');
+  ylabel('Probabilidade');
+  ylim([0, 1]);
+  xticks(valores_x);
+  grid on;
+
+  % PoissonCDF
+  subplot(2, 1, 2);
+  stairs(valores_x, valores_cdf, 'LineWidth', 2);
+  title('Poisson CDF');
+  xlabel('X');
+  ylabel('Probabilidade acumulada');
+  ylim([0, 1.5]);
+  xticks(valores_x);
+  grid on;
+end
+
 % Programa principal:
 while true
+      clc
       % Exibir opções do menu
       fprintf('[1] Bernoulli\n');
       fprintf('[2] Binomial\n');
+      fprintf('[3] Uniforme\n');
+      fprintf('[4] Earlang\n');
+      fprintf('[5] Exponencial\n');
+      fprintf('[6] Finita\n');
+      fprintf('[7] Gauss\n');
+      fprintf('[8] Geometrica\n');
+      fprintf('[9] Pascal\n');
+      fprintf('[10] Poisson\n');
       fprintf('[0] Sair\n');
       opcao = input('Escolha: ');
 
@@ -155,6 +250,8 @@ while true
               bernoulli();
           case 2
               binomial();
+          case 10
+              poisson();
           case 0
               fprintf('Programa finalizado!\n');
               break; % Interrompe o loop
