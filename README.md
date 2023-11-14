@@ -11,7 +11,7 @@ Neste trabalho implementamos algumas funções de variáveis aleatórias discret
 - [Finita]()
 - [Gauss]()
 - [Geometrica]()
-- [Pascal]()
+- [Pascal](https://github.com/gabryeleite/Octave_functions/blob/main/pascal.m)
 - [Poisson](https://github.com/gabryeleite/Octave_functions/blob/main/poisson.m)
 
 ## Integrantes: 
