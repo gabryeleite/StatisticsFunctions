@@ -3,8 +3,8 @@
 Neste trabalho implementamos algumas funções de variáveis aleatórias discreta usando o software OCTAVE
 
 ## Modelos:
-- [Bernoulli]()
-- [Binomial]()
+- [Bernoulli](https://github.com/gabryeleite/Octave_functions/blob/main/bernoulli.m)
+- [Binomial](https://github.com/gabryeleite/Octave_functions/blob/main/binomial.m)
 - [Uniforme]()
 - [Earlang]()
 - [Exponencial]()
@@ -12,7 +12,7 @@ Neste trabalho implementamos algumas funções de variáveis aleatórias discret
 - [Gauss]()
 - [Geometrica]()
 - [Pascal]()
-- [Poisson]()
+- [Poisson](https://github.com/gabryeleite/Octave_functions/blob/main/poisson.m)
 
 ## Integrantes: 
 - [gabryeleite](https://github.com/gabryeleite)
