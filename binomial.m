@@ -69,7 +69,7 @@ Bicdf = binomialcdf(Bipmf, x); % binomialcdf
 % Output:
 % BinomialPMF
 subplot(2,1,1);
-stem(x, Bipmf);
+stem(x, Bipmf, 'LineWidth', 2);
 title('Binomial PMF');
 xlabel('X');
 ylabel('Probabilidade');
@@ -79,7 +79,7 @@ grid on;
 
 % BinomialCDF
 subplot(2,1,2);
-stairs(x, Bicdf); % stairs melhor representação para CDF, como se trata de uma soma acumulada
+stairs(x, Bicdf, 'LineWidth', 2); % stairs melhor representação para CDF, como se trata de uma soma acumulada
 title('Binomial CDF');
 xlabel('X');
 ylabel('Probabilidade acumulada');
