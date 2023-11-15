@@ -93,29 +93,36 @@ end
 
 %Input:
 % Definindo a grade de amostras e probabilidades
-sx = [1, 2, 3, 4]; % Exemplo de espaço amostral
-px = [0.1, 0.2, 0.3, 0.4]; % Exemplo de probabilidades
-m = input('Digite o numero de amostras: '); % Número de amostras
-
-% Gerando amostras da variável aleatória finita
-x_values = finiterv(sx, px, m);
-
+%m = input('Digite o numero de amostras: '); % Número de amostras
+% sx = [0, 1, 2, 3]; % Exemplo de espaço amostral
+fid = fopen('dados.txt','r');
+sx = fscanf(fid, '%d'); % lendo o espaço amostral de um arquivo
+fclose(fid);
+% px = [0.1, 0.2, 0.3, 0.4]; % Exemplo de probabilidades
+fid = fopen('probabilidades.txt','r'); % lendo as probabilidades de um arquivo
+px = fscanf(fid, '%f'); % a soma das probabilidades tem que dar 1
+fclose(fid);            % e a quantidade deve ser a mesma do espaço amostral
+%x_values = finiterv(sx, px, m); % Gerando amostras da variável aleatória finita
+pmf = finitepmf(sx, px, sx); % Usei sx como valores de x para a PMF
+cdf = finitecdf(sx, px, sx); % Usei sx como valores de x para a CDF
 
 % Output:
 % Plotando a PMF
 subplot(2, 1, 1);
-pmf = finitepmf(sx, px, sx); % Usei sx como valores de x para a PMF
-stem(sx, pmf, 'Marker', 'o', 'LineStyle', 'none');
+stem(sx, pmf, 'LineWidth', 2);
 title('Função Massa de Probabilidade (PMF)');
 xlabel('X');
 ylabel('Probabilidade');
+ylim([0, 1]);
+xticks(sx);
 grid on;
 
 % Plotando a CDF
 subplot(2, 1, 2);
-cdf = finitecdf(sx, px, sx); % Usei sx como valores de x para a CDF
-stairs(sx, cdf, 'Marker', 'o', 'LineStyle', '-');
+stairs(sx, cdf, 'LineWidth', 2);
 title('Função de Distribuição Cumulativa (CDF)');
 xlabel('X');
 ylabel('Probabilidade acumulada');
+ylim([0, 1.5]);
+xticks(sx);
 grid on;
