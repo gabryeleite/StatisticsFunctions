@@ -144,6 +144,157 @@ function binomial()
   grid on;
 end
 
+% Exponencial:
+function cdf = exponencialcdf(lambda, x)
+    cdf = 1.0 - exp(-lambda * x);
+end
+
+function pdf = exponencialpdf(lambda, x)
+    pdf = lambda * exp(-lambda * x) .* (x >= 0);
+end
+
+function rv = exponencialrv(lambda, m)
+    rv = -(1/lambda) * log(1 - rand(m, 1));
+end
+
+function exponencial()
+  % Input:
+  lambda = input('Digite a taxa de chegada lambda (entre 0 e 1): ');
+  %m = input('Digite o numero de amostras: ');
+  fid = fopen('dados.txt','r');
+  x = fscanf(fid, '%d');
+  fclose(fid);
+  % Gerando amostras exponenciais:
+  %Erv = exponencialrv(lambda, m);
+  %x = linspace(0, max(Erv), m); % 1000
+  Epdf = exponencialpdf(lambda, x);
+  Ecdf = exponencialcdf(lambda, x);
+
+  % Output:
+  % ExponencialPDF
+  subplot(2,1,1);
+  stem(x, Epdf, 'LineWidth', 2);
+  title('Exponencial PDF');
+  xlabel('X');
+  ylabel('Densidade de Probabilidade');
+  ylim([0, 1]);
+  xticks(x);
+  grid on;
+
+  % ExponencialCDF
+  subplot(2,1,2);
+  stairs(x, Ecdf, 'LineWidth', 2);
+  title('Exponencial CDF');
+  xlabel('X');
+  ylabel('Probabilidade acumulada');
+  ylim([0, 1.5]);
+  xticks(x);
+  grid on;
+end
+
+% Finita:
+function pmf = finitepmf(sx, px, x)
+    % pmf(i) = P[X = x(i)]
+
+    pmf = zeros(size(x(:)));
+    for i = 1:length(x)
+        pmf(i) = sum(px(sx == x(i)));
+    end
+end
+
+function cdf = finitecdf(s, p, x)
+    % cdf(i) = P[X <= x(i)]
+
+    cdf = zeros(size(x));
+    for i = 1:length(x)
+        pxi = sum(p(s <= x(i)));
+        cdf(i) = pxi;
+    end
+end
+
+function rho = finitecoeff(SX, SY, PXY)
+    % Calcula o coeficiente de correlação rho de variáveis aleatórias finitas X e Y
+    ex = finiteexp(SX, PXY);
+    vx = finitevar(SX, PXY);
+    ey = finiteexp(SY, PXY);
+    vy = finitevar(SY, PXY);
+    R = finiteexp(SX .* SY, PXY);
+    rho = (R - ex * ey) / sqrt(vx * vy);
+end
+
+function covxy = finitecov(SX, SY, PXY)
+    % Retorna a covariância das variáveis aleatórias finitas X e Y dadas pelas grades SX, SY e PXY
+    ex = finiteexp(SX, PXY);
+    ey = finiteexp(SY, PXY);
+    R = finiteexp(SX .* SY, PXY);
+    covxy = R - ex * ey;
+end
+
+function ex = finiteexp(sx, px)
+    % Retorna o valor esperado E[X]
+    ex = sum((sx(:)) .* (px(:)));
+end
+
+function v = finitevar(sx, px)
+    % Retorna a variância Var[X]
+    ex2 = finiteexp(sx.^2, px);
+    ex = finiteexp(sx, px);
+    v = ex2 - (ex^2);
+end
+
+function x = finiterv(s, p, m)
+    % Retorna m amostras de uma variável aleatória finita (s, p)
+    r = rand(m, 1);
+    x = zeros(m, 1);
+
+    for i = 1:m
+        for j = 1:length(s)
+            if r(i) <= sum(p(1:j))
+                x(i) = s(j);
+                break;
+            end
+        end
+    end
+end
+
+function finita()
+  %Input:
+  % Definindo a grade de amostras e probabilidades
+  %m = input('Digite o numero de amostras: '); % Número de amostras
+  % sx = [0, 1, 2, 3]; % Exemplo de espaço amostral
+  fid = fopen('dados.txt','r');
+  sx = fscanf(fid, '%d'); % lendo o espaço amostral de um arquivo
+  fclose(fid);
+  % px = [0.1, 0.2, 0.3, 0.4]; % Exemplo de probabilidades
+  fid = fopen('probabilidades.txt','r'); % lendo as probabilidades de um arquivo
+  px = fscanf(fid, '%f'); % a soma das probabilidades tem que dar 1
+  fclose(fid);            % e a quantidade deve ser a mesma do espaço amostral
+  %x_values = finiterv(sx, px, m); % Gerando amostras da variável aleatória finita
+  pmf = finitepmf(sx, px, sx); % Usei sx como valores de x para a PMF
+  cdf = finitecdf(sx, px, sx); % Usei sx como valores de x para a CDF
+
+  % Output:
+  % FinitaPMF
+  subplot(2, 1, 1);
+  stem(sx, pmf, 'LineWidth', 2);
+  title('Finita PMF');
+  xlabel('X');
+  ylabel('Probabilidade');
+  ylim([0, 1]);
+  xticks(sx);
+  grid on;
+
+  % FinitaCDF
+  subplot(2, 1, 2);
+  stairs(sx, cdf, 'LineWidth', 2);
+  title('Finita CDF');
+  xlabel('X');
+  ylabel('Probabilidade acumulada');
+  ylim([0, 1.5]);
+  xticks(sx);
+  grid on;
+end
+
 % Pascal:
 function pmf = pascalpmf(k, p, x)
   % vetor pmf: pmf(i) = Prob[X = x(i)]
@@ -338,6 +489,10 @@ while true
           bernoulli();
       case 2
           binomial();
+      case 5
+          exponencial();
+      case 6
+          finita();
       case 9
           pascal();
       case 10
