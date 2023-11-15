@@ -43,6 +43,7 @@ fclose(fid);
 valores_pmf = duniformpmf(k, l, x);
 valores_cdf = duniformcdf(valores_pmf, x);
 
+% Output:
 % UniformePMF
 subplot(2, 1, 1);
 stem(x, valores_pmf, 'LineWidth', 2);
