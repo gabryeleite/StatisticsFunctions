@@ -12,7 +12,7 @@ end
 
 function cdf = duniformcdf(pmf, x)
   % cdf(i) = Prob[X <= x(i)]
-  x = floor(x(:)); % for non-integer x_i
+  x = floor(x(:)); 
 
   allcdf = cumsum(pmf);
 
