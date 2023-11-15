@@ -9,8 +9,8 @@ Neste trabalho implementamos algumas funções de variáveis aleatórias discret
 - [Earlang]()
 - [Exponencial](https://github.com/gabryeleite/Octave_functions/blob/main/exponencial.m)
 - [Finita](https://github.com/gabryeleite/Octave_functions/blob/main/finita.m)
-- [Gauss]()
-- [Geometrica]()
+- [Gauss](https://github.com/gabryeleite/Octave_functions/blob/main/gauss.m)
+- [Geometrica](https://github.com/gabryeleite/Octave_functions/blob/main/geometrica.m)
 - [Pascal](https://github.com/gabryeleite/Octave_functions/blob/main/pascal.m)
 - [Poisson](https://github.com/gabryeleite/Octave_functions/blob/main/poisson.m)
 
