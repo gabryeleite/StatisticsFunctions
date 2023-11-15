@@ -143,6 +143,126 @@ function binomial()
   grid on;
 end
 
+% Uniforme:
+function pmf = duniformpmf(k, l, x)
+  % discrete uniform(k,l) rv X,
+  % input = vector x
+  % output = vector pmf: pmf(i) = Prob[X = x(i)]
+
+  pmf = (x >= k) .* (x <= l) .* (x == floor(x));
+  pmf = pmf(:) / (l - k + 1);
+end
+
+function cdf = duniformcdf(pmf, x)
+  % cdf(i) = Prob[X <= x(i)]
+  x = floor(x(:));
+
+  allcdf = cumsum(pmf);
+
+  okx = (x >= 0); % x(i) < 0 probabilidade zero
+  x = (okx .* x); % define probabilidade zero x(i) = 0
+
+  cdf = okx .* allcdf(x + 1); % zero para zero-prob x(i)
+end
+
+function x = duniformrv(k, l, m)
+  % returns m amostras
+  r = rand(m, 1);
+  cdf = duniformcdf(k, l, k:l);
+  [~, x] = histc(r, [0; cumsum(cdf)]);
+  x = x + k - 1;
+end
+
+function uniforme()
+  % Input:
+  fprintf('Os limites devem estar de acordo com os dados passados para funcionar devidamente\n');
+  k = input('Digite o limite inferior: '); % Limite inferior da distribuição
+  l = input('Digite o limite superior: '); % Limite superior da distribuição
+  %m = input('Digite o numero de amostras: ');
+  %x = duniformrv(k, l, m);
+  fid = fopen('dados.txt','r');
+  x = fscanf(fid, '%d');
+  fclose(fid);
+  % Calcular PMF e CDF
+  valores_pmf = duniformpmf(k, l, x);
+  valores_cdf = duniformcdf(valores_pmf, x);
+
+  % Output:
+  % UniformePMF
+  subplot(2, 1, 1);
+  stem(x, valores_pmf, 'LineWidth', 2);
+  title('Uniforme PMF');
+  xlabel('X');
+  ylabel('Probabilidade');
+  ylim([0, 1]);
+  xticks(x);
+  grid on;
+
+  % UniformeCDF
+  subplot(2, 1, 2);
+  stairs(x, valores_cdf, 'LineWidth', 2);
+  title('Uniforme CDF');
+  xlabel('X');
+  ylabel('Probabilidade acumulada');
+  ylim([0, 1.5]);
+  xticks(x);
+  grid on;
+end
+
+% Erlang:
+function f = erlangpmf(n, lambda, x)
+    f = ((lambda^n) / factorial(n)) .* (x.^(n-1)) .* exp(-lambda*x);
+end
+
+function F = erlangcdf(n, lambda, x)
+    F = 1 - gammainc(x * lambda, n, 'upper');
+end
+
+function pb = erlangb(rho, c)
+  pn = exp(-rho) * poisspdf(0:c, rho);
+  pb = pn(c + 1) / sum(pn);
+end
+
+function x = erlangrv(n, lambda, m)
+    y = exponentialrv(lambda, m * n);
+    y_reshaped = reshape(y, m, n);
+    x = sum(y_reshaped, 2);
+end
+
+function erlang()
+  % Input:
+  n = input('Informe o parâmetro n (inteiro positivo): ');
+  lambda = input('Informe lambda (entre 0 e 1): ');
+  % m = input('Informe o número de amostras (m): ');
+  fid = fopen('dados.txt','r');
+  x = fscanf(fid, '%d');
+  fclose(fid);
+  %x = erlangrv(n, lambda, m)
+  valores_pmf = erlangpmf(n, lambda, x);
+  valores_cdf = erlangcdf(n, lambda, x);
+
+  % Output:
+  % ErlangPMF
+  subplot(2, 1, 1);
+  stem(x, valores_pmf, 'LineWidth', 2);
+  title('Erlang PMF');
+  xlabel('X');
+  ylabel('Probabilidade');
+  ylim([0, 1]);
+  xticks(x);
+  grid on;
+
+  % ErlangCDF
+  subplot(2, 1, 2);
+  stairs(x, valores_cdf, 'LineWidth', 2);
+  title('Erlang CDF');
+  xlabel('X');
+  ylabel('Probabilidade acumulada');
+  ylim([0, 1.5]);
+  xticks(x);
+  grid on;
+end
+
 % Exponencial:
 function cdf = exponencialcdf(lambda, x)
     cdf = 1.0 - exp(-lambda * x);
@@ -606,7 +726,7 @@ while true
   fprintf('[1] Bernoulli\n');
   fprintf('[2] Binomial\n');
   fprintf('[3] Uniforme\n');
-  fprintf('[4] Earlang\n');
+  fprintf('[4] Erlang\n');
   fprintf('[5] Exponencial\n');
   fprintf('[6] Finita\n');
   fprintf('[7] Gauss\n');
@@ -621,6 +741,10 @@ while true
           bernoulli();
       case 2
           binomial();
+      case 3
+          uniforme();
+      case 4
+          erlang();
       case 5
           exponencial();
       case 6
