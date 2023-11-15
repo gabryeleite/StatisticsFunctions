@@ -5,8 +5,8 @@ Neste trabalho implementamos algumas funções de variáveis aleatórias discret
 ## Modelos:
 - [Bernoulli](https://github.com/gabryeleite/Octave_functions/blob/main/bernoulli.m)
 - [Binomial](https://github.com/gabryeleite/Octave_functions/blob/main/binomial.m)
-- [Uniforme]()
-- [Earlang]()
+- [Uniforme](https://github.com/gabryeleite/Octave_functions/blob/main/uniforme.m)
+- [Erlang](https://github.com/gabryeleite/Octave_functions/blob/main/erlang.m)
 - [Exponencial](https://github.com/gabryeleite/Octave_functions/blob/main/exponencial.m)
 - [Finita](https://github.com/gabryeleite/Octave_functions/blob/main/finita.m)
 - [Gauss](https://github.com/gabryeleite/Octave_functions/blob/main/gauss.m)
