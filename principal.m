@@ -95,8 +95,8 @@ end
 
 function result = count(cdf, values)
   % Função de contagem para encontrar o primeiro índice onde cdf é maior que cada valor
-
   result = zeros(size(values));
+
   for i = 1:numel(values)
     result(i) = find(cdf >= values(i), 1, 'first') - 1;
   end
@@ -104,7 +104,6 @@ end
 
 function x = binomialrv(n, p, m)
   % Gera m amostras da distribuição binomial(n, p)
-
   r = rand(m, 1);
   cdf = binomialcdf(n, p, 0:n);
   x = count(cdf, r);
@@ -195,7 +194,6 @@ end
 % Finita:
 function pmf = finitepmf(sx, px, x)
     % pmf(i) = P[X = x(i)]
-
     pmf = zeros(size(x(:)));
     for i = 1:length(x)
         pmf(i) = sum(px(sx == x(i)));
@@ -204,7 +202,6 @@ end
 
 function cdf = finitecdf(s, p, x)
     % cdf(i) = P[X <= x(i)]
-
     cdf = zeros(size(x));
     for i = 1:length(x)
         pxi = sum(p(s <= x(i)));
@@ -292,6 +289,141 @@ function finita()
   ylabel('Probabilidade acumulada');
   ylim([0, 1.5]);
   xticks(sx);
+  grid on;
+end
+
+% Gauss:
+function f = gausspdf(mu, sigma, x)
+    f = exp(-(x - mu).^2 / (2 * sigma^2)) / sqrt(2 * pi * sigma^2);
+end
+
+function f = gausscdf(pmf, x)
+  % Saída cdf(i) = Prob[X <= x(i)]
+  %f = 0.5 * (1 + erf((x - mu) / (sigma * sqrt(2))));
+  x = floor(x(:));
+  sx = 0:max(x);
+
+  allcdf = cumsum(pmf); % soma cumulativa da PMF para obter a CDF
+  % Correção para x(i) < 0
+  okx = (x >= 0);
+  f = okx .* allcdf(x + 1); % cdf = 0 para x(i) < 0
+end
+
+function x = gaussrv(mu, sigma, m)
+    x = mu + sigma * randn(m, 1);
+end
+
+function x = gaussvector(mu, C, m)
+    % Saída: m vetores gauss, cada um com média mu e matriz de covariância C
+
+    if (min(size(C)) == 1)
+        C = toeplitz(C);
+    end
+
+    n = size(C, 2);
+
+    if (length(mu) == 1)
+        mu = mu * ones(n, 1);
+    end
+
+    [U, D, V] = svd(C);
+    x = V * (D^(0.5)) * randn(n, m) + (mu(:) * ones(1, m));
+end
+
+function f = gaussvectorpdf(mu, C, a)
+    n = length(a);
+    z = a(:) - mu(:);
+    f = exp(-z' * inv(C) * z) / sqrt((2 * pi)^n * det(C));
+end
+
+function gauss()
+  % Input:
+  mu = input('Informe o parâmetro mu (inteiro positivo e dentro dos dados fornecidos): ');
+  C = sigma = input('Informe a probabilidade sigma (entre 0 e 1): ');
+  %a = m = input('Informe o número de amostras (m): ');
+  % Quando sigma é muito pequeno, a função de densidade de probabilidade (PDF) se torna muito "pico",
+  % e quando sigma é grande, a PDF se espalha. (Podemos conferir nos gráficos)
+  fid = fopen('dados.txt','r');
+  x = fscanf(fid, '%d');
+  fclose(fid);
+  %x = gaussrv(mu, sigma, m)
+  %y = gaussvector(mu, C, m)
+  valores_pdf = gausspdf(mu, sigma, x);
+  valores_cdf = gausscdf(valores_pdf, x);
+  %valores_vet = gaussvectorpdf(mu, C, a)
+
+  % Output:
+  % GaussPDF
+  subplot(2,1,1);
+  stem(x, valores_pdf, 'LineWidth', 2);
+  title('Gauss PDF');
+  xlabel('X');
+  ylabel('Probabilidade');
+  ylim([0, 1]);
+  xticks(x);
+  grid on;
+
+  % GausslCDF
+  subplot(2,1,2);
+  stairs(x, valores_cdf, 'LineWidth', 2); % stairs melhor representação para CDF, como se trata de uma soma acumulada
+  title('Gauss CDF');
+  xlabel('X');
+  ylabel('Probabilidade acumulada');
+  ylim([0, 1.5]);
+  xticks(x);
+  grid on;
+end
+
+% Geometrica:
+function pmf = geometricapmf(p, x)
+  % pmf(i) = Prob[X=x(i)]
+  x = x(:);
+  pmf = p * ((1-p).^(x-1));
+  pmf = (x > 0) .* (x == floor(x)) .* pmf;
+end
+
+function cdf = geometricacdf(p, x)
+  % cdf_i = Prob(X <= x_i)
+  x = (x(:) >= 1) .* floor(x(:));
+  cdf = 1 - ((1 - p).^x);
+end
+
+function x = geometricarv(p, m)
+  % Returns m amostras de geometric(p)
+  r = rand(m, 1);
+  x = ceil(log(1-r) / log(1-p));
+end
+
+function geometrica()
+  % Input:
+  p = input('Digite a probabilidade p (entre 0 e 1): ');
+  %m = input('Digite o numero de amostras: ');
+  fid = fopen('dados.txt','r');
+  x = fscanf(fid, '%d');
+  fclose(fid);
+  %x = geometricarv(p, m);
+  Gepmf = geometricapmf(p, x); % geometricpmf
+  Gecdf = geometricacdf(p, x); % geometriccdf
+
+  % Output:
+  % GeometricaPMF
+  subplot(2,1,1);
+  stem(x, Gepmf, 'LineWidth', 2);
+  title('Geometrica PMF');
+  xlabel('X');
+  ylabel('Probabilidade');
+  ylim([0, 1]);
+  xticks(x);
+  grid on;
+
+  % GeometricaCDF
+  subplot(2,1,2);
+  stairs(x, Gecdf, 'LineWidth', 2); % stairs melhor representação para CDF, como se trata de uma soma acumulada
+  title('Geometrica CDF');
+  xlabel('X');
+  ylabel('Probabilidade acumulada');
+  ylim([0, 1.5]);
+  xticks(x);
   grid on;
 end
 
@@ -493,6 +625,10 @@ while true
           exponencial();
       case 6
           finita();
+      case 7
+          gauss();
+      case 8
+          geometrica();
       case 9
           pascal();
       case 10
