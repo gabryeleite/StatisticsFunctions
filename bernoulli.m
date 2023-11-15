@@ -35,7 +35,7 @@ Bcdf = bernoullicdf(Bpmf, x); % bernoullicdf
 % Output:
 % BernoulliPMF
 subplot(2,1,1);
-stem(x, Bpmf);
+stem(x, Bpmf, 'LineWidth', 2);
 title('Bernoulli PMF');
 xlabel('X');
 ylabel('Probabilidade');
@@ -45,7 +45,7 @@ grid on;
 
 % BernoulliCDF
 subplot(2,1,2);
-stairs(x, Bcdf); % stairs melhor representação para CDF, como se trata de uma soma acumulada
+stairs(x, Bcdf, 'LineWidth', 2); % stairs melhor representação para CDF, como se trata de uma soma acumulada
 title('Bernoulli CDF');
 xlabel('X');
 ylabel('Probabilidade acumulada');
