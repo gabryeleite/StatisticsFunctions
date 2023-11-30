@@ -144,68 +144,57 @@ function binomial()
 end
 
 % Uniforme:
-function pmf = duniformpmf(k, l, x)
-  % discrete uniform(k,l) rv X,
-  % input = vector x
-  % output = vector pmf: pmf(i) = Prob[X = x(i)]
-
-  pmf = (x >= k) .* (x <= l) .* (x == floor(x));
-  pmf = pmf(:) / (l - k + 1);
+function f = uniformpdf(a, b, x)
+  % Uso: f = uniformpdf(a, b, x)
+  % Retorna a PDF de uma variável aleatória uniforme contínua avaliada em x
+  f = ((x >= a) & (x < b)) / (b - a);
 end
 
-function cdf = duniformcdf(pmf, x)
-  % cdf(i) = Prob[X <= x(i)]
-  x = floor(x(:));
-
-  allcdf = cumsum(pmf);
-
-  okx = (x >= 0); % x(i) < 0 probabilidade zero
-  x = (okx .* x); % define probabilidade zero x(i) = 0
-
-  cdf = okx .* allcdf(x + 1); % zero para zero-prob x(i)
+function F = uniformcdf(a, b, x)
+  % Uso: F = uniformcdf(a, b, x)
+  % Retorna a CDF de uma variável aleatória uniforme contínua avaliada em x
+  F = x .* ((x >= a) & (x < b)) / (b - a);
+  F = F + 1.0 * (x >= b);
+  F(F > 1) = 1;
 end
 
-function x = duniformrv(k, l, m)
-  % returns m amostras
-  r = rand(m, 1);
-  cdf = duniformcdf(k, l, k:l);
-  [~, x] = histc(r, [0; cumsum(cdf)]);
-  x = x + k - 1;
+function x = uniformrv(a, b, m)
+  % Uso: x = uniformrv(a, b, m)
+  % Retorna m amostras de uma variável aleatória uniforme (a, b)
+  x = a + (b - a) * rand(m, 1);
 end
 
 function uniforme()
   % Input:
-  fprintf('Os limites devem estar de acordo com os dados passados para funcionar devidamente\n');
-  k = input('Digite o limite inferior: '); % Limite inferior da distribuição
-  l = input('Digite o limite superior: '); % Limite superior da distribuição
+  a = input('Digite o limite inferior: '); % Limite inferior da distribuição
+  b = input('Digite o limite superior: '); % Limite superior da distribuição
   %m = input('Digite o numero de amostras: ');
-  %x = duniformrv(k, l, m);
-  fid = fopen('dados.txt','r');
-  x = fscanf(fid, '%d');
-  fclose(fid);
-  % Calcular PMF e CDF
-  valores_pmf = duniformpmf(k, l, x);
-  valores_cdf = duniformcdf(valores_pmf, x);
+  %x = uniformrv(a, b, m);
+  x = a : 0.1 : b;
+
+  % Calcular PDF e CDF
+  valores_pdf = uniformpdf(a, b, x);
+  valores_cdf = uniformcdf(a, b, x);
 
   % Output:
-  % UniformePMF
+  % UniformePDF
   subplot(2, 1, 1);
-  stem(x, valores_pmf, 'LineWidth', 2);
-  title('Uniforme PMF');
+  plot(x, valores_pdf, 'LineWidth', 2);
+  title('Uniforme PDF');
   xlabel('X');
   ylabel('Probabilidade');
   ylim([0, 1]);
-  xticks(x);
+  %xticks(x);
   grid on;
 
   % UniformeCDF
   subplot(2, 1, 2);
-  stairs(x, valores_cdf, 'LineWidth', 2);
+  plot(x, valores_cdf, 'LineWidth', 2);
   title('Uniforme CDF');
   xlabel('X');
   ylabel('Probabilidade acumulada');
   ylim([0, 1.5]);
-  xticks(x);
+  %xticks(x);
   grid on;
 end
 
@@ -231,83 +220,85 @@ end
 
 function erlang()
   % Input:
+  a = input('Digite o limite inferior: '); % Limite inferior da distribuição
+  b = input('Digite o limite superior: '); % Limite superior da distribuição
   n = input('Informe o parâmetro n (inteiro positivo): ');
   lambda = input('Informe lambda (entre 0 e 1): ');
   % m = input('Informe o número de amostras (m): ');
-  fid = fopen('dados.txt','r');
-  x = fscanf(fid, '%d');
-  fclose(fid);
-  %x = erlangrv(n, lambda, m)
-  valores_pmf = erlangpmf(n, lambda, x);
+  %x = erlangrv(n, lambda, m);
+  x = a : 0.1 : b;
+
+  % Calcular PDF e CDF
+  valores_pdf = erlangpdf(n, lambda, x);
   valores_cdf = erlangcdf(n, lambda, x);
 
   % Output:
-  % ErlangPMF
+  % ErlangPDF
   subplot(2, 1, 1);
-  stem(x, valores_pmf, 'LineWidth', 2);
-  title('Erlang PMF');
+  plot(x, valores_pdf, 'LineWidth', 2);
+  title('Erlang PDF');
   xlabel('X');
   ylabel('Probabilidade');
   ylim([0, 1]);
-  xticks(x);
+  %xticks(x);
   grid on;
 
   % ErlangCDF
   subplot(2, 1, 2);
-  stairs(x, valores_cdf, 'LineWidth', 2);
+  plot(x, valores_cdf, 'LineWidth', 2);
   title('Erlang CDF');
   xlabel('X');
   ylabel('Probabilidade acumulada');
   ylim([0, 1.5]);
-  xticks(x);
+  %xticks(x);
   grid on;
 end
 
 % Exponencial:
-function cdf = exponencialcdf(lambda, x)
-    cdf = 1.0 - exp(-lambda * x);
+function f = exponencialpdf(lambda, x)
+  f = lambda * exp(-lambda * x);
+  f = f .* (x >= 0);
 end
 
-function pdf = exponencialpdf(lambda, x)
-    pdf = lambda * exp(-lambda * x) .* (x >= 0);
+function F = exponencialcdf(lambda, x)
+  F = 1.0 - exp(-lambda * x);
 end
 
-function rv = exponencialrv(lambda, m)
-    rv = -(1/lambda) * log(1 - rand(m, 1));
+function x = exponencialrv(lambda, m)
+  x = -(1/lambda) * log(1 - rand(m, 1));
 end
 
 function exponencial()
   % Input:
+  a = input('Digite o limite inferior: '); % Limite inferior da distribuição
+  b = input('Digite o limite superior: '); % Limite superior da distribuição
   lambda = input('Digite a taxa de chegada lambda (entre 0 e 1): ');
   %m = input('Digite o numero de amostras: ');
-  fid = fopen('dados.txt','r');
-  x = fscanf(fid, '%d');
-  fclose(fid);
-  % Gerando amostras exponenciais:
-  %Erv = exponencialrv(lambda, m);
-  %x = linspace(0, max(Erv), m); % 1000
+  %x = exponencialrv(lambda, m);
+  x = a : 0.1 : b;
+
   Epdf = exponencialpdf(lambda, x);
   Ecdf = exponencialcdf(lambda, x);
 
   % Output:
   % ExponencialPDF
   subplot(2,1,1);
-  stem(x, Epdf, 'LineWidth', 2);
+  plot(x, Epdf, 'LineWidth', 2);
   title('Exponencial PDF');
   xlabel('X');
-  ylabel('Densidade de Probabilidade');
+  ylabel('Probabilidade');
   ylim([0, 1]);
-  xticks(x);
+  %xticks(x);
   grid on;
 
   % ExponencialCDF
   subplot(2,1,2);
-  stairs(x, Ecdf, 'LineWidth', 2);
+  plot(x, Ecdf, 'LineWidth', 2);
   title('Exponencial CDF');
   xlabel('X');
   ylabel('Probabilidade acumulada');
   ylim([0, 1.5]);
-  xticks(x);
+  %xticks(x);
   grid on;
 end
 
@@ -414,23 +405,15 @@ end
 
 % Gauss:
 function f = gausspdf(mu, sigma, x)
-    f = exp(-(x - mu).^2 / (2 * sigma^2)) / sqrt(2 * pi * sigma^2);
+  f = exp(-(x - mu).^2 / (2 * sigma^2)) / sqrt(2 * pi * sigma^2);
 end
 
-function f = gausscdf(pmf, x)
-  % Saída cdf(i) = Prob[X <= x(i)]
-  %f = 0.5 * (1 + erf((x - mu) / (sigma * sqrt(2))));
-  x = floor(x(:));
-  sx = 0:max(x);
-
-  allcdf = cumsum(pmf); % soma cumulativa da PMF para obter a CDF
-  % Correção para x(i) < 0
-  okx = (x >= 0);
-  f = okx .* allcdf(x + 1); % cdf = 0 para x(i) < 0
+function f = gausscdf(mu, sigma, x)
+  f = 0.5 * (1 + erf((x - mu) / (sigma * sqrt(2))));
 end
 
 function x = gaussrv(mu, sigma, m)
-    x = mu + sigma * randn(m, 1);
+  x = mu + (sigma * randn(m, 1));
 end
 
 function x = gaussvector(mu, C, m)
@@ -458,39 +441,39 @@ end
 
 function gauss()
   % Input:
-  mu = input('Informe o parâmetro mu (inteiro positivo e dentro dos dados fornecidos): ');
-  C = sigma = input('Informe a probabilidade sigma (entre 0 e 1): ');
-  %a = m = input('Informe o número de amostras (m): ');
+  a = input('Digite o limite inferior: '); % Limite inferior da distribuição
+  b = input('Digite o limite superior: '); % Limite superior da distribuição
+  mu = input('Informe o parâmetro mu (inteiro positivo): ');
+  sigma = input('Informe a probabilidade sigma (entre 0 e 1): ');
+  %m = input('Informe o número de amostras (m): ');
+  %x = gaussrv(mu, sigma, m);
+  x = a : 0.1 : b;
   % Quando sigma é muito pequeno, a função de densidade de probabilidade (PDF) se torna muito "pico",
   % e quando sigma é grande, a PDF se espalha. (Podemos conferir nos gráficos)
-  fid = fopen('dados.txt','r');
-  x = fscanf(fid, '%d');
-  fclose(fid);
-  %x = gaussrv(mu, sigma, m)
-  %y = gaussvector(mu, C, m)
+
+  % Calcular PDF e CDF
   valores_pdf = gausspdf(mu, sigma, x);
-  valores_cdf = gausscdf(valores_pdf, x);
-  %valores_vet = gaussvectorpdf(mu, C, a)
+  valores_cdf = gausscdf(mu, sigma, x);
 
   % Output:
   % GaussPDF
   subplot(2,1,1);
-  stem(x, valores_pdf, 'LineWidth', 2);
+  plot(x, valores_pdf, 'LineWidth', 2);
   title('Gauss PDF');
   xlabel('X');
   ylabel('Probabilidade');
   ylim([0, 1]);
-  xticks(x);
+  %xticks(x);
   grid on;
 
   % GausslCDF
   subplot(2,1,2);
-  stairs(x, valores_cdf, 'LineWidth', 2); % stairs melhor representação para CDF, como se trata de uma soma acumulada
+  plot(x, valores_cdf, 'LineWidth', 2);
   title('Gauss CDF');
   xlabel('X');
   ylabel('Probabilidade acumulada');
   ylim([0, 1.5]);
-  xticks(x);
+  %xticks(x);
   grid on;
 end
 
@@ -725,11 +708,11 @@ while true
   % Exibir opções do menu
   fprintf('[1] Bernoulli\n');
   fprintf('[2] Binomial\n');
-  fprintf('[3] Uniforme\n');
-  fprintf('[4] Erlang\n');
-  fprintf('[5] Exponencial\n');
+  fprintf('[3] Uniforme PDF\n');
+  fprintf('[4] Erlang PDF\n');
+  fprintf('[5] Exponencial PDF\n');
   fprintf('[6] Finita\n');
-  fprintf('[7] Gauss\n');
+  fprintf('[7] Gauss PDF\n');
   fprintf('[8] Geometrica\n');
   fprintf('[9] Pascal\n');
   fprintf('[10] Poisson\n');
