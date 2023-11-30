@@ -1,15 +1,15 @@
 # Funções de Variáveis Discretas e Contínuas
 
-Neste trabalho implementamos algumas funções de variáveis aleatórias discreta usando o software OCTAVE
+Neste trabalho implementamos algumas funções de variáveis aleatórias discretas e contínuas usando o software OCTAVE
 
 ## Modelos:
 - [Bernoulli](https://github.com/gabryeleite/Octave_functions/blob/main/bernoulli.m)
 - [Binomial](https://github.com/gabryeleite/Octave_functions/blob/main/binomial.m)
-- [Uniforme](https://github.com/gabryeleite/Octave_functions/blob/main/uniforme.m)
-- [Erlang](https://github.com/gabryeleite/Octave_functions/blob/main/erlang.m)
-- [Exponencial](https://github.com/gabryeleite/Octave_functions/blob/main/exponencial.m)
+- [Uniforme](https://github.com/gabryeleite/Octave_functions/blob/main/uniformePDF.m)
+- [Erlang](https://github.com/gabryeleite/Octave_functions/blob/main/erlangPDF.m)
+- [Exponencial](https://github.com/gabryeleite/Octave_functions/blob/main/exponencialPDF.m)
 - [Finita](https://github.com/gabryeleite/Octave_functions/blob/main/finita.m)
-- [Gauss](https://github.com/gabryeleite/Octave_functions/blob/main/gauss.m)
+- [Gauss](https://github.com/gabryeleite/Octave_functions/blob/main/gaussPDF.m)
 - [Geometrica](https://github.com/gabryeleite/Octave_functions/blob/main/geometrica.m)
 - [Pascal](https://github.com/gabryeleite/Octave_functions/blob/main/pascal.m)
 - [Poisson](https://github.com/gabryeleite/Octave_functions/blob/main/poisson.m)
