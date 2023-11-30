@@ -1,4 +1,4 @@
-# Funções de Variáveis Discretas e Contínuas
+# Funções de Variáveis Aleatórias Discretas e Contínuas
 
 Neste trabalho implementamos algumas funções de variáveis aleatórias discretas e contínuas usando o software OCTAVE
 
