@@ -1,4 +1,4 @@
-# Funções de Variáveis Discretas
+# Funções de Variáveis Discretas e Contínuas
 
 Neste trabalho implementamos algumas funções de variáveis aleatórias discreta usando o software OCTAVE
 
@@ -24,7 +24,7 @@ Neste trabalho implementamos algumas funções de variáveis aleatórias discret
 ## Instruções:
 - [Programa Principal:](https://github.com/gabryeleite/Octave_functions/blob/main/principal.m) reune todas as funções apresentando um menu de opções
 - **Input:** Escolha uma das funções e digite os valores que o programa pedir
-- **Output:** Representação gráfica da função (stem para PMF e stairs para CDF)
+- **Output:** Representação gráfica da função (stem para PMF, stairs para CDF e plot para PDF)
 - **Obs:** Necessário um arquivo "dados.txt" que conterá os valores a serem lidos
 
 ## Referências:
