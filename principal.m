@@ -199,7 +199,7 @@ function uniforme()
 end
 
 % Erlang:
-function f = erlangpmf(n, lambda, x)
+function f = erlangpdf(n, lambda, x)
     f = ((lambda^n) / factorial(n)) .* (x.^(n-1)) .* exp(-lambda*x);
 end
 
